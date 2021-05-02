@@ -2,7 +2,7 @@ FROM continuumio/anaconda3:2020.11
 
 USER root
 
-RUN apt install git
+RUN apt-get install git
 
 WORKDIR /workspace
 
@@ -11,7 +11,7 @@ RUN conda env update -f open-unmix-pytorch/scripts/environment-gpu-linux-cuda10.
 RUN conda init bash
 RUN echo "conda activate umx-gpu" >> ~/.bashrc
 RUN apt-get -y install libsndfile1
-RUN pip install openunmix
+RUN cp open-unmix-pytorch/scripts/train.py open-unmix-pytorch/
 
 
 
