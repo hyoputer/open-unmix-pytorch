@@ -1,15 +1,18 @@
-FROM pytorch/pytorch:1.7.1-cuda11.0-cudnn8-runtime
+FROM continuumio/anaconda3:2020.11
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libsox-fmt-all \
-    sox \
-    libsox-dev
+USER root
+
+RUN apt install git
 
 WORKDIR /workspace
 
-RUN conda install ffmpeg -c conda-forge
-RUN pip install musdb>=0.4.0
+RUN git clone https://github.com/sigsep/open-unmix-pytorch
+RUN conda env update -f open-unmix-pytorch/scripts/environment-gpu-linux-cuda10.yml
+RUN conda init bash
+RUN echo "conda activate umx-gpu" >> ~/.bashrc
+RUN apt-get -y install libsndfile1
 
-RUN pip install openunmix['stempeg']
 
-ENTRYPOINT ["umx"]
+
+
+
