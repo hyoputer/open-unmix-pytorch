@@ -11,6 +11,7 @@ RUN conda env update -f open-unmix-pytorch/scripts/environment-gpu-linux-cuda10.
 RUN conda init bash
 RUN echo "conda activate umx-gpu" >> ~/.bashrc
 RUN apt-get -y install libsndfile1
+RUN pip install openunmix
 
 
 
