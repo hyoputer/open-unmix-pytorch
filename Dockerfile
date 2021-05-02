@@ -6,7 +6,7 @@ RUN apt install git
 
 WORKDIR /workspace
 
-RUN git clone https://github.com/sigsep/open-unmix-pytorch
+RUN git clone https://github.com/hyoputer/open-unmix-pytorch
 RUN conda env update -f open-unmix-pytorch/scripts/environment-gpu-linux-cuda10.yml
 RUN conda init bash
 RUN echo "conda activate umx-gpu" >> ~/.bashrc
