@@ -11,6 +11,7 @@ from git import Repo
 import os
 import copy
 import torchaudio
+import wandb
 
 from openunmix import data
 from openunmix import model
@@ -200,6 +201,8 @@ def main():
         "--no-cuda", action="store_true", default=False, help="disables CUDA training"
     )
 
+    wandb.init(project="open-unmix")
+
     args, _ = parser.parse_known_args()
 
     torchaudio.set_audio_backend(args.audio_backend)
@@ -310,6 +313,7 @@ def main():
         scheduler.step(valid_loss)
         train_losses.append(train_loss)
         valid_losses.append(valid_loss)
+        wandb.log({"train_loss": train_loss, "valid_loss": valid_loss})
 
         t.set_postfix(train_loss=train_loss, val_loss=valid_loss)
 
@@ -348,6 +352,8 @@ def main():
             outfile.write(json.dumps(params, indent=4, sort_keys=True))
 
         train_times.append(time.time() - end)
+
+        wandb.finish()
 
         if stop:
             print("Apply Early Stopping")
