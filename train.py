@@ -353,11 +353,11 @@ def main():
 
         train_times.append(time.time() - end)
 
-        wandb.finish()
-
         if stop:
             print("Apply Early Stopping")
             break
+    
+    wandb.finish()
 
 
 if __name__ == "__main__":
