@@ -341,6 +341,7 @@ def main():
             "valid_loss_history": valid_losses,
             "train_time_history": train_times,
             "num_bad_epochs": es.num_bad_epochs,
+            "commit": commit,
         }
 
         with open(Path(target_path, args.target + ".json"), "w") as outfile:
