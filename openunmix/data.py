@@ -869,13 +869,14 @@ class MUSDBDataset(UnmixDataset):
                 audio = torch.as_tensor(track.sources[source].audio.T, dtype=torch.float32)
                 audio = self.source_augmentations(audio)
                 
-                for _ in range(5):
-                # set the excerpt duration
-                    track.chunk_duration = self.seq_duration
-                    # set random start position
-                    track.chunk_start = random.uniform(0, track.duration - self.seq_duration)
-                    # load source audio and apply time domain source_augmentations
-                    audio = audio.add(torch.as_tensor(track.sources[source].audio.T, dtype=torch.float32))
+                if source == self.target:
+                    for _ in range(5):
+                    # set the excerpt duration
+                        track.chunk_duration = self.seq_duration
+                        # set random start position
+                        track.chunk_start = random.uniform(0, track.duration - self.seq_duration)
+                        # load source audio and apply time domain source_augmentations
+                        audio = audio.add(torch.as_tensor(track.sources[source].audio.T, dtype=torch.float32))
 
                 audio_sources.append(audio)
 
