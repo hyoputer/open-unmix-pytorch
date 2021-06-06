@@ -73,7 +73,7 @@ class OpenUnmix(nn.Module):
         self.bn2 = BatchNorm1d(hidden_size)
 
         self.fc3 = Linear(
-            in_features=hidden_size,
+            in_features=hidden_size * 2,
             out_features=self.nb_output_bins * nb_channels,
             bias=False,
         )
@@ -126,31 +126,40 @@ class OpenUnmix(nn.Module):
         # shift and scale input to mean=0 std=1 (across all bins)
         x = x + self.input_mean
         x = x * self.input_scale
-
+        
+        # print('shape1: ' + str(x.shape))
         # to (nb_frames*nb_samples, nb_channels*nb_bins)
         # and encode to (nb_frames*nb_samples, hidden_size)
         x = self.fc1(x.reshape(-1, nb_channels * self.nb_bins))
         # normalize every instance in a batch
         x = self.bn1(x)
+        # print('shape2: ' + str(x.shape))
+        skip = x
         x = x.reshape(nb_frames, nb_samples, self.hidden_size)
         # squash range ot [-1, 1]
         x = torch.tanh(x)
+        # print('shape3: ' + str(x.shape))
 
         # apply 3-layers of stacked LSTM
         lstm_out = self.lstm(x)
+        # print('lstm_shape: ' + str(lstm_out[0].shape))
 
         # lstm skip connection
         x = torch.cat([x, lstm_out[0]], -1)
+        # print('shape4: ' + str(x.shape))
 
         # first dense stage + batch norm
         x = self.fc2(x.reshape(-1, x.shape[-1]))
         x = self.bn2(x)
 
         x = F.relu(x)
+        # print('shape5: ' + str(x.shape))
+        x = torch.cat([x, skip], -1)
 
         # second dense stage + layer norm
         x = self.fc3(x)
         x = self.bn3(x)
+        # print('shape6: ' + str(x.shape))
 
         # reshape back to original dim
         x = x.reshape(nb_frames, nb_samples, nb_channels, self.nb_output_bins)
